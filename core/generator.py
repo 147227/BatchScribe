@@ -43,7 +43,8 @@ if not '__version__' in globals():
     __version__ = "3.6.0"
 
 class NovelGenerator:
-    def __init__(self, api_key: str, model: str = "gpt-4.5-preview",
+    def __init__(self, api_key: str, model: str = "gpt-4.1",
+                 base_url: Optional[str] = None,
                  max_workers: int = 3, language: str = "中文",
                  novel_type: str = "奇幻冒险",
                  custom_prompt: Optional[str] = None,
@@ -95,9 +96,13 @@ class NovelGenerator:
         self.num_cover_images = num_cover_images
         
         # API相关
-        self.base_url = "https://aiapi.space/v1/chat/completions"
+        if base_url:
+            self.base_url = base_url
+        else:
+            self.base_url = "https://api.rcouyi.com/v1/chat/completions"
+        
         self.session = None
-        self.existing_content = {}
+        #self.existing_content = {}
         
         # 媒体生成器
         self.media_generator = None
@@ -1020,10 +1025,10 @@ class NovelGenerator:
                 self.session = aiohttp.ClientSession()
                 
             if not hasattr(self, 'base_url'):
-                self.base_url = "https://aiapi.space/v1/chat/completions"
-            elif self.base_url != "https://aiapi.space/v1/chat/completions":
+                self.base_url = "https://api.rcouyi.com/v1/chat/completions"
+            elif self.base_url != "https://api.rcouyi.com/v1/chat/completions":
                 # 确保始终使用正确的API URL
-                self.base_url = "https://aiapi.space/v1/chat/completions"
+                self.base_url = "https://api.rcouyi.com/v1/chat/completions"
                 
             # 确保existing_content是字典类型
             if not hasattr(self, 'existing_content'):
