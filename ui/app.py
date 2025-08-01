@@ -104,6 +104,7 @@ class NovelGeneratorApp:
         self.generate_cover_var = tk.BooleanVar(value=False)  # 默认不生成封面
         self.generate_music_var = tk.BooleanVar(value=False)  # 默认不生成音乐
         self.num_cover_images_var = tk.IntVar(value=1)  # 默认生成1张封面
+        self.base_url_var = tk.StringVar(value="https://api.rcouyi.com/v1/chat/completions")
         
         # 高级设置
         self.temperature = 0.66
@@ -309,19 +310,24 @@ class NovelGeneratorApp:
         ttk.Label(settings_grid, text="API密钥:").grid(row=0, column=0, sticky=tk.W, pady=5)
         api_key_entry = ttk.Entry(settings_grid, textvariable=self.api_key_var, width=40, show="*")
         api_key_entry.grid(row=0, column=1, sticky=tk.W, pady=5)
+
+        # Base URL
+        ttk.Label(settings_grid, text="Base URL:").grid(row=1, column=0, sticky=tk.W, pady=5)
+        base_url_entry = ttk.Entry(settings_grid, textvariable=self.base_url_var, width=40)
+        base_url_entry.grid(row=1, column=1, columnspan=2, sticky=tk.W, pady=5)
         
         # 添加获取API密钥的按钮链接
         get_api_btn = ttk.Button(settings_grid, text="获取密钥", command=self.open_api_website)
-        get_api_btn.grid(row=0, column=2, sticky=tk.W, pady=5, padx=(5, 0))
+        get_api_btn.grid(row=1, column=2, sticky=tk.W, pady=5, padx=(5, 0))
         
         # 模型选择
         model_frame = ttk.Frame(left_frame)
-        model_frame.grid(row=3, column=0, columnspan=3, sticky="ew", padx=5, pady=5)
+        model_frame.grid(row=4, column=0, columnspan=3, sticky="ew", padx=5, pady=5)
         
-        ttk.Label(model_frame, text="选择模型:").grid(row=0, column=0, sticky="w")
+        ttk.Label(model_frame, text="选择模型:").grid(row=1, column=0, sticky="w")
         
         model_buttons_frame = ttk.Frame(model_frame)
-        model_buttons_frame.grid(row=0, column=1, sticky="w", padx=5)
+        model_buttons_frame.grid(row=1, column=1, sticky="w", padx=5)
         
         self.model_combo = ttk.Combobox(model_buttons_frame, textvariable=self.model_var, width=20)
         self.model_combo['values'] = self.models
@@ -342,24 +348,24 @@ class NovelGeneratorApp:
         
         # 模型描述标签
         self.model_desc_label = ttk.Label(model_frame, text="", wraplength=600)
-        self.model_desc_label.grid(row=1, column=0, columnspan=2, sticky="w", pady=2)
+        self.model_desc_label.grid(row=2, column=0, columnspan=2, sticky="w", pady=2)
         
         # 设置初始模型描述
         self.on_model_change()
         
         # 语言选择
-        ttk.Label(settings_grid, text="语言:").grid(row=2, column=0, sticky=tk.W, pady=5)
+        ttk.Label(settings_grid, text="语言:").grid(row=3, column=0, sticky=tk.W, pady=5)
         language_frame = ttk.Frame(settings_grid)
-        language_frame.grid(row=2, column=1, sticky=tk.W, pady=5)
+        language_frame.grid(row=4, column=1, sticky=tk.W, pady=5)
         
         for lang in ["中文", "English"]:
             ttk.Radiobutton(language_frame, text=lang, variable=self.language_var, 
                           value=lang).pack(side=tk.LEFT, padx=5)
         
         # 小说类型
-        ttk.Label(settings_grid, text="小说类型:").grid(row=3, column=0, sticky=tk.W, pady=5)
+        ttk.Label(settings_grid, text="小说类型:").grid(row=4, column=0, sticky=tk.W, pady=5)
         type_frame = ttk.Frame(settings_grid)
-        type_frame.grid(row=3, column=1, sticky=tk.W, pady=5)
+        type_frame.grid(row=4, column=1, sticky=tk.W, pady=5)
         
         self.novel_type_combo = ttk.Combobox(type_frame, textvariable=self.novel_type_var, width=15)
         self.novel_type_combo.pack(side=tk.LEFT)
@@ -376,37 +382,37 @@ class NovelGeneratorApp:
         random_type_check.pack(side=tk.LEFT, padx=5)
         
         # 目标字数 - 改为可输入的形式
-        ttk.Label(settings_grid, text="目标字数:").grid(row=4, column=0, sticky=tk.W, pady=5)
+        ttk.Label(settings_grid, text="目标字数:").grid(row=5, column=0, sticky=tk.W, pady=5)
         target_length_entry = ttk.Entry(settings_grid, textvariable=self.target_length_var, width=10)
-        target_length_entry.grid(row=4, column=1, sticky=tk.W, pady=5)
-        ttk.Label(settings_grid, text="(建议值: 5000-100000)").grid(row=4, column=2, sticky=tk.W, pady=5)
+        target_length_entry.grid(row=5, column=1, sticky=tk.W, pady=5)
+        ttk.Label(settings_grid, text="(建议值: 5000-100000)").grid(row=5, column=2, sticky=tk.W, pady=5)
         
         # 添加验证功能
         self.register_validator(target_length_entry, self.validate_number)
         
         # 生成数量 - 改为可输入的形式
-        ttk.Label(settings_grid, text="生成数量:").grid(row=5, column=0, sticky=tk.W, padx=5, pady=5)
+        ttk.Label(settings_grid, text="生成数量:").grid(row=6, column=0, sticky=tk.W, padx=5, pady=5)
         num_novels_entry = ttk.Entry(settings_grid, textvariable=self.num_novels_var, width=10)
-        num_novels_entry.grid(row=5, column=1, sticky=tk.W, padx=5, pady=5)
-        ttk.Label(settings_grid, text="(建议值: 1-20)").grid(row=5, column=2, sticky=tk.W, pady=5)
+        num_novels_entry.grid(row=6, column=1, sticky=tk.W, padx=5, pady=5)
+        ttk.Label(settings_grid, text="(建议值: 1-20)").grid(row=6, column=2, sticky=tk.W, pady=5)
         
         # 添加验证功能
         self.register_validator(num_novels_entry, self.validate_number)
         
         # 并行数 - 改为可输入的形式
-        ttk.Label(settings_grid, text="并行线程数:").grid(row=6, column=0, sticky=tk.W, padx=5, pady=5)
+        ttk.Label(settings_grid, text="并行线程数:").grid(row=7, column=0, sticky=tk.W, padx=5, pady=5)
         max_workers_entry = ttk.Entry(settings_grid, textvariable=self.max_workers_var, width=10)
-        max_workers_entry.grid(row=6, column=1, sticky=tk.W, padx=5, pady=5)
-        ttk.Label(settings_grid, text="(建议值: 1-20)").grid(row=6, column=2, sticky=tk.W, pady=5)
+        max_workers_entry.grid(row=7, column=1, sticky=tk.W, padx=5, pady=5)
+        ttk.Label(settings_grid, text="(建议值: 1-20)").grid(row=7, column=2, sticky=tk.W, pady=5)
         
         # 添加验证功能
         self.register_validator(max_workers_entry, self.validate_number)
         
         # 续写模式
-        ttk.Label(settings_grid, text="续写模式:").grid(row=7, column=0, sticky=tk.W, padx=5, pady=5)
+        ttk.Label(settings_grid, text="续写模式:").grid(row=8, column=0, sticky=tk.W, padx=5, pady=5)
         
         continue_frame = ttk.Frame(settings_grid)
-        continue_frame.grid(row=7, column=1, columnspan=3, sticky=tk.W, padx=5, pady=5)
+        continue_frame.grid(row=8, column=1, columnspan=3, sticky=tk.W, padx=5, pady=5)
         
         # 单文件续写
         ttk.Radiobutton(continue_frame, text="不续写", 
@@ -423,7 +429,7 @@ class NovelGeneratorApp:
         
         # 单文件续写框架
         self.continue_file_frame = ttk.Frame(settings_grid)
-        self.continue_file_frame.grid(row=8, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
+        self.continue_file_frame.grid(row=9, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
         self.continue_file_entry = ttk.Entry(self.continue_file_frame, textvariable=self.continue_file_var, width=30)
         self.continue_file_entry.pack(side=tk.LEFT, padx=(0, 5))
         self.browse_file_button = ttk.Button(self.continue_file_frame, text="选择文件", command=self.browse_continue_file)
@@ -431,7 +437,7 @@ class NovelGeneratorApp:
         
         # 批量续写框架
         self.continue_dir_frame = ttk.Frame(settings_grid)
-        self.continue_dir_frame.grid(row=9, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
+        self.continue_dir_frame.grid(row=10, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
         self.continue_dir_entry = ttk.Entry(self.continue_dir_frame, textvariable=self.continue_dir_var, width=30)
         self.continue_dir_entry.pack(side=tk.LEFT, padx=(0, 5))
         self.browse_dir_button = ttk.Button(self.continue_dir_frame, text="选择文件夹", command=self.browse_continue_dir)
@@ -443,7 +449,7 @@ class NovelGeneratorApp:
         
         # 输出目录选择
         output_dir_row = ttk.Frame(settings_grid)
-        output_dir_row.grid(row=10, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
+        output_dir_row.grid(row=11, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
         ttk.Label(output_dir_row, text="输出目录:").pack(side=tk.LEFT, padx=(0, 5))
         self.output_dir_entry = ttk.Entry(output_dir_row, width=30)
         self.output_dir_entry.pack(side=tk.LEFT, padx=(0, 5))
@@ -451,15 +457,15 @@ class NovelGeneratorApp:
         
         # 结局生成选项
         ending_frame = ttk.Frame(settings_grid)
-        ending_frame.grid(row=11, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
+        ending_frame.grid(row=12, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
         ttk.Checkbutton(ending_frame, text="生成结局", variable=self.create_ending_var).pack(side=tk.LEFT)
         
         # 自定义提示词
-        ttk.Label(settings_grid, text="自定义提示词:").grid(row=12, column=0, sticky=tk.W, padx=5, pady=5)
+        ttk.Label(settings_grid, text="自定义提示词:").grid(row=13, column=0, sticky=tk.W, padx=5, pady=5)
         
         # 添加自定义提示词说明按钮
         prompt_help_frame = ttk.Frame(settings_grid)
-        prompt_help_frame.grid(row=12, column=1, sticky=tk.E, padx=5, pady=5)
+        prompt_help_frame.grid(row=13, column=1, sticky=tk.E, padx=5, pady=5)
         
         insert_template_btn = ttk.Button(prompt_help_frame, text="插入模板", 
                                        command=self.insert_prompt_template)
@@ -467,16 +473,16 @@ class NovelGeneratorApp:
         
         # 自定义提示词文本框
         self.custom_prompt_text = scrolledtext.ScrolledText(settings_grid, height=5, width=50)
-        self.custom_prompt_text.grid(row=13, column=0, columnspan=3, sticky=tk.W+tk.E, padx=5, pady=5)
+        self.custom_prompt_text.grid(row=14, column=0, columnspan=3, sticky=tk.W+tk.E, padx=5, pady=5)
         
         # 保存配置复选框
         save_config_check = ttk.Checkbutton(settings_grid, text="保存配置", 
                                           variable=self.save_config_var)
-        save_config_check.grid(row=14, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
+        save_config_check.grid(row=15, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
         
         # 自动摘要选项
         auto_summary_frame = ttk.LabelFrame(settings_grid, text="自动摘要设置")
-        auto_summary_frame.grid(row=15, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
+        auto_summary_frame.grid(row=16, column=0, columnspan=3, sticky=tk.W, padx=5, pady=5)
         
         # 创建结局选项
         create_ending_check = ttk.Checkbutton(
@@ -484,7 +490,7 @@ class NovelGeneratorApp:
             text="直接创作结局", 
             variable=self.create_ending_var
         )
-        create_ending_check.grid(row=0, column=0, sticky="w", padx=5, pady=2)
+        create_ending_check.grid(row=1, column=0, sticky="w", padx=5, pady=2)
         
         # 创建随机类型选项（用于批量生成）
         random_types_check = ttk.Checkbutton(
@@ -492,7 +498,7 @@ class NovelGeneratorApp:
             text="随机小说类型", 
             variable=self.random_types_var
         )
-        random_types_check.grid(row=0, column=1, sticky="w", padx=5, pady=2)
+        random_types_check.grid(row=1, column=1, sticky="w", padx=5, pady=2)
         
         # 创建自动摘要选项
         auto_summary_check = ttk.Checkbutton(
@@ -500,11 +506,11 @@ class NovelGeneratorApp:
             text="启用自动摘要", 
             variable=self.auto_summary_var
         )
-        auto_summary_check.grid(row=1, column=0, sticky="w", padx=5, pady=2)
+        auto_summary_check.grid(row=2, column=0, sticky="w", padx=5, pady=2)
         
         # 自动摘要间隔设置
         auto_summary_interval_frame = ttk.Frame(auto_summary_frame)
-        auto_summary_interval_frame.grid(row=1, column=1, sticky="w", padx=5, pady=2)
+        auto_summary_interval_frame.grid(row=2, column=1, sticky="w", padx=5, pady=2)
         
         ttk.Label(auto_summary_interval_frame, text="摘要间隔 (字): ").pack(side=tk.LEFT)
         auto_summary_interval_entry = ttk.Spinbox(
@@ -523,11 +529,11 @@ class NovelGeneratorApp:
             text="生成封面图片", 
             variable=self.generate_cover_var
         )
-        generate_cover_check.grid(row=2, column=0, sticky="w", padx=5, pady=2)
+        generate_cover_check.grid(row=3, column=0, sticky="w", padx=5, pady=2)
         
         # 封面图片数量设置
         cover_count_frame = ttk.Frame(auto_summary_frame)
-        cover_count_frame.grid(row=2, column=1, sticky="w", padx=5, pady=2)
+        cover_count_frame.grid(row=3, column=1, sticky="w", padx=5, pady=2)
         
         ttk.Label(cover_count_frame, text="封面数量: ").pack(side=tk.LEFT)
         cover_count_entry = ttk.Spinbox(
@@ -546,7 +552,7 @@ class NovelGeneratorApp:
             text="生成主题音乐", 
             variable=self.generate_music_var
         )
-        generate_music_check.grid(row=3, column=0, sticky="w", padx=5, pady=2)
+        generate_music_check.grid(row=4, column=0, sticky="w", padx=5, pady=2)
         
         # 媒体生成说明
         media_info_label = ttk.Label(
@@ -555,7 +561,7 @@ class NovelGeneratorApp:
             font=("Arial", 8),
             foreground="gray"
         )
-        media_info_label.grid(row=3, column=1, sticky="w", padx=5, pady=2)
+        media_info_label.grid(row=4, column=1, sticky="w", padx=5, pady=2)
         
         # 高级设置按钮
         advanced_settings_btn = ttk.Button(
@@ -563,11 +569,11 @@ class NovelGeneratorApp:
             text="更多高级设置",
             command=self.open_advanced_settings
         )
-        advanced_settings_btn.grid(row=4, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
+        advanced_settings_btn.grid(row=5, column=0, columnspan=2, sticky="ew", padx=5, pady=5)
         
         # 操作按钮
         buttons_frame = ttk.Frame(settings_grid)
-        buttons_frame.grid(row=16, column=0, columnspan=3, pady=10)
+        buttons_frame.grid(row=17, column=0, columnspan=3, pady=10)
         
         self.generate_button = ttk.Button(buttons_frame, text="开始生成", 
                                          command=self.start_generation)
@@ -600,25 +606,25 @@ class NovelGeneratorApp:
         status_grid = ttk.Frame(log_frame)
         status_grid.pack(fill=tk.X, pady=5, padx=10)
         
-        ttk.Label(status_grid, text="状态:").grid(row=0, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(status_grid, text="状态:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=2)
         self.status_label = ttk.Label(status_grid, text="就绪")
-        self.status_label.grid(row=0, column=1, sticky=tk.W, padx=5, pady=2)
+        self.status_label.grid(row=1, column=1, sticky=tk.W, padx=5, pady=2)
         
-        ttk.Label(status_grid, text="已生成字数:").grid(row=1, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(status_grid, text="已生成字数:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=2)
         self.word_count_label = ttk.Label(status_grid, text="0")
-        self.word_count_label.grid(row=1, column=1, sticky=tk.W, padx=5, pady=2)
+        self.word_count_label.grid(row=2, column=1, sticky=tk.W, padx=5, pady=2)
         
-        ttk.Label(status_grid, text="目标字数:").grid(row=1, column=2, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(status_grid, text="目标字数:").grid(row=2, column=2, sticky=tk.W, padx=5, pady=2)
         self.target_word_label = ttk.Label(status_grid, text="0")
-        self.target_word_label.grid(row=1, column=3, sticky=tk.W, padx=5, pady=2)
+        self.target_word_label.grid(row=2, column=3, sticky=tk.W, padx=5, pady=2)
         
-        ttk.Label(status_grid, text="完成百分比:").grid(row=2, column=0, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(status_grid, text="完成百分比:").grid(row=3, column=0, sticky=tk.W, padx=5, pady=2)
         self.percent_label = ttk.Label(status_grid, text="0%")
-        self.percent_label.grid(row=2, column=1, sticky=tk.W, padx=5, pady=2)
+        self.percent_label.grid(row=3, column=1, sticky=tk.W, padx=5, pady=2)
         
-        ttk.Label(status_grid, text="预计剩余时间:").grid(row=2, column=2, sticky=tk.W, padx=5, pady=2)
+        ttk.Label(status_grid, text="预计剩余时间:").grid(row=3, column=2, sticky=tk.W, padx=5, pady=2)
         self.time_left_label = ttk.Label(status_grid, text="--:--")
-        self.time_left_label.grid(row=2, column=3, sticky=tk.W, padx=5, pady=2)
+        self.time_left_label.grid(row=3, column=3, sticky=tk.W, padx=5, pady=2)
         
         # 进度条
         self.progress = ttk.Progressbar(log_frame, orient=tk.HORIZONTAL, length=100, mode='determinate')
@@ -840,6 +846,7 @@ class NovelGeneratorApp:
             "num_novels": self.num_novels_var.get(),
             "max_workers": self.max_workers_var.get(),
             "output_dir": self.output_dir_entry.get(),
+            "base_url": self.base_url_var.get(),
             "custom_prompt": self.custom_prompt_text.get("1.0", tk.END).strip(),
             "create_ending": self.create_ending_var.get(),
             "random_types": self.random_types_var.get(),
@@ -862,6 +869,9 @@ class NovelGeneratorApp:
         # 设置基本配置
         if "api_key" in config:
             self.api_key_var.set(config["api_key"])
+            
+        if "base_url" in config and config["base_url"]:
+            self.base_url_var.set(config["base_url"])
             
         if "model" in config:
             self.model_var.set(config["model"])
@@ -994,6 +1004,7 @@ class NovelGeneratorApp:
             generation_settings = {
                 "api_key": api_key,
                 "model": self.model_var.get(),
+                "base_url": self.base_url_var.get().strip(),
                 "max_workers": self.max_workers_var.get(),
                 "language": self.language_var.get(),
                 "novel_type": self.novel_type_var.get(),
@@ -1372,7 +1383,7 @@ class NovelGeneratorApp:
     def open_api_website(self):
         """打开获取API密钥的网站"""
         import webbrowser
-        webbrowser.open("https://aiapi.space") 
+        webbrowser.open("https://api.rcouyi.com") 
         
     def open_tutorial_website(self):
         """打开教程网站"""
