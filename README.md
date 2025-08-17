@@ -10,7 +10,7 @@
 
 ## 📖 详细使用指南
 
-**全新优化版本（尚未开源）请参考：**[AI小说生成器官方文档](https://ccnql5c7kjke.feishu.cn/wiki/FXp9wHkozi8a3YkH3lRcw5EBn3f)
+**全新优化版本（尚未开源）请参考：**[AI小说生成器官方文档](https://aiapi.space)
 
 ## 📄 开源协议
 
